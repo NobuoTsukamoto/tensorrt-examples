@@ -1,0 +1,3 @@
+[submodule "TensorRT"]
+	path = TensorRT
+	url = https://github.com/NobuoTsukamoto/TensorRT-1.git
