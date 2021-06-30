@@ -63,8 +63,6 @@ def append_nms(
         "scoreBits": 16,
     }
 
-    print(nms_attrs)
-
     num_detections = gs.Variable(
         name="num_detections", dtype=np.int32, shape=(batch_size, 1)
     )
@@ -96,9 +94,9 @@ def main():
     parser.add_argument("--output", type=str, required=True)
     parser.add_argument("--max_classes_per_detection", type=int, default=1)
     parser.add_argument("--max_detections", type=int, default=10)
-    parser.add_argument("--back_ground_Label_id", type=int, default=0)
+    parser.add_argument("--background_label_id", type=int, default=0)
     parser.add_argument("--nms_iou_threshold", type=float, default=0.6)
-    parser.add_argument("--nms_score_threshold", type=float, default=0.1)
+    parser.add_argument("--nms_score_threshold", type=float, default=0.01)
     parser.add_argument("--num_classes", type=int, default=91)
     parser.add_argument("--y_scale", type=float, default=10.0)
     parser.add_argument("--x_scale", type=float, default=10.0)
