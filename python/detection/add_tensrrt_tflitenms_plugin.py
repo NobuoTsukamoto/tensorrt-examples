@@ -33,13 +33,23 @@ def append_nms(
     x_scale,
     h_scale,
     w_scale,
+    efficientdet,
 ):
     # https://github.com/NVIDIA/TensorRT/issues/795
     # out_tensors = graph.outputs
+    boxes_name = "concat"
+    scores_name = "convert_scores"
+    anchors_name = "anchors"
+
     tmap = graph.tensors()
-    boxes_input = tmap["concat"]
-    scores_input = tmap["convert_scores"]
-    anchors = tmap["anchors"]
+    if efficientdet:
+        boxes_name = "concat_1"
+        scores_name = "Sigmoid"
+        anchors_name = "stack"
+
+    boxes_input = tmap[boxes_name]
+    scores_input = tmap[scores_name]
+    anchors = tmap[anchors_name]
 
     onnx_tensor = OnnxExporter.export_tensor_proto(anchors)
     anchors_value = onnx.numpy_helper.to_array(onnx_tensor)
@@ -47,19 +57,18 @@ def append_nms(
     anchors_input = Constant(name="anchors_input", values=anchors_value)
 
     batch_size = 1
-    keep_top_k = 10
 
     nms_attrs = {
-        "max_classes_per_detection": max_classes_per_detection,
-        "max_detections": max_detections,
-        "back_ground_Label_id": back_ground_Label_id,
-        "nms_iou_threshold": nms_iou_threshold,
-        "nms_score_threshold": nms_score_threshold,
-        "num_classes": num_classes,
-        "y_scale": y_scale,
-        "x_scale": x_scale,
-        "h_scale": h_scale,
-        "w_scale": w_scale,
+        "maxClassesPerDetection": max_classes_per_detection,
+        "keepTopK": max_detections,
+        "backgroundLabelId": back_ground_Label_id,
+        "iouThreshold": nms_iou_threshold,
+        "scoreThreshold": nms_score_threshold,
+        "numClasses": num_classes,
+        "yScale": y_scale,
+        "xScale": x_scale,
+        "hScale": h_scale,
+        "wScale": w_scale,
         "scoreBits": 16,
     }
 
@@ -67,13 +76,13 @@ def append_nms(
         name="num_detections", dtype=np.int32, shape=(batch_size, 1)
     )
     boxes = gs.Variable(
-        name="nmsed_boxes", dtype=np.float32, shape=(batch_size, keep_top_k, 4)
+        name="nmsed_boxes", dtype=np.float32, shape=(batch_size, max_detections, 4)
     )
     scores = gs.Variable(
-        name="nmsed_scores", dtype=np.float32, shape=(batch_size, keep_top_k)
+        name="nmsed_scores", dtype=np.float32, shape=(batch_size, max_detections)
     )
     classes = gs.Variable(
-        name="nmsed_classes", dtype=np.float32, shape=(batch_size, keep_top_k)
+        name="nmsed_classes", dtype=np.float32, shape=(batch_size, max_detections)
     )
     graph.outputs = [num_detections, boxes, scores, classes]
 
@@ -96,12 +105,13 @@ def main():
     parser.add_argument("--max_detections", type=int, default=10)
     parser.add_argument("--background_label_id", type=int, default=0)
     parser.add_argument("--nms_iou_threshold", type=float, default=0.6)
-    parser.add_argument("--nms_score_threshold", type=float, default=0.01)
+    parser.add_argument("--nms_score_threshold", type=float, default=0.0)
     parser.add_argument("--num_classes", type=int, default=91)
     parser.add_argument("--y_scale", type=float, default=10.0)
     parser.add_argument("--x_scale", type=float, default=10.0)
     parser.add_argument("--h_scale", type=float, default=5.0)
     parser.add_argument("--w_scale", type=float, default=5.0)
+    parser.add_argument("--efficientdet", action="store_true")
 
     args = parser.parse_args()
 
@@ -113,7 +123,7 @@ def main():
         graph,
         args.max_classes_per_detection,
         args.max_detections,
-        args.back_ground_Label_id,
+        args.background_label_id,
         args.nms_iou_threshold,
         args.nms_score_threshold,
         args.num_classes,
@@ -121,6 +131,7 @@ def main():
         args.x_scale,
         args.h_scale,
         args.w_scale,
+        args.efficientdet,
     )
 
     # Remove unused nodes, and topologically sort the graph.
