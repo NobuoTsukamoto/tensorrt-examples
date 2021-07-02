@@ -105,7 +105,7 @@ def main():
     parser.add_argument("--max_detections", type=int, default=10)
     parser.add_argument("--background_label_id", type=int, default=0)
     parser.add_argument("--nms_iou_threshold", type=float, default=0.6)
-    parser.add_argument("--nms_score_threshold", type=float, default=0.0)
+    parser.add_argument("--nms_score_threshold", type=float, default=1e-8)
     parser.add_argument("--num_classes", type=int, default=91)
     parser.add_argument("--y_scale", type=float, default=10.0)
     parser.add_argument("--x_scale", type=float, default=10.0)
