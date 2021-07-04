@@ -5,7 +5,7 @@ TensorRT examples (Jetson, Python/C++)
 
 ## List of samples
 
-|Detection|
+|Object detection|
 |:--|
 |[TensorFlow Lite to TensorRT](python/detection/README.md)|
 |![detection](images/detection.gif)|
