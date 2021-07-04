@@ -136,7 +136,7 @@ def main():
     parser.add_argument(
         "--nms_score_threshold",
         type=float,
-        default=1e-8,
+        default=0.1,
         help='TFLite_Detection_PostProcess Attributes "nms_score_threshold"',
     )
     parser.add_argument(
