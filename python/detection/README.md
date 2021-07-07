@@ -58,7 +58,7 @@ python3 object_detection/export_tflite_ssd_graph.py \
 tflite_convert \
     --enable_v1_converter \
     --graph_def_file="./ssdlite_mobilenet_v2_coco_2018_05_09/tflite/tflite_graph.pb" \
-    --output_file="./ssdlite_mobilenet_v2_coco_2018_05_09/tflite/ssdlite_mobilenet_v2_320x320.tflite" \
+    --output_file="./ssdlite_mobilenet_v2_coco_2018_05_09/tflite/ssdlite_mobilenet_v2_300x300.tflite" \
     --inference_input_type=FLOAT \
     --inference_type=FLOAT \
     --input_arrays="normalized_input_image_tensor" \
@@ -79,8 +79,8 @@ Convert TensorFlow Lite Model to ONNX Model.
 Note: TensorRT 7.2 supports operators up to Opset 11.
 ```
 python3 -m tf2onnx.convert --opset 11 \
-    --tflite ./ssdlite_mobilenet_v2_coco_2018_05_09/tflite/ssdlite_mobilenet_v2_320x320.tflite \
-    --output ./ssdlite_mobilenet_v2_coco_2018_05_09/onnx/ssdlite_mobilenet_v2_320x320.onnx
+    --tflite ./ssdlite_mobilenet_v2_coco_2018_05_09/tflite/ssdlite_mobilenet_v2_300x300.tflite \
+    --output ./ssdlite_mobilenet_v2_coco_2018_05_09/onnx/ssdlite_mobilenet_v2_300x300.onnx
 ```
 
 ### Add TFLiteNSMPlugin to ONNX Model. 
@@ -98,11 +98,11 @@ cd ./tensorrt-examples/python/detection
 Add TFLiteNMSPlugin.
 ```
 python3 add_tensorrt_tflitenms_plugin.py \
-    --input ../../../ssdlite_mobilenet_v2_coco_2018_05_09/onnx/ssdlite_mobilenet_v2_320x320.onnx \
-    --output ../../..//ssdlite_mobilenet_v2_coco_2018_05_09/onnx/ssdlite_mobilenet_v2_320x320_gs.onnx
+    --input ../../../ssdlite_mobilenet_v2_coco_2018_05_09/onnx/ssdlite_mobilenet_v2_300x300.onnx \
+    --output ../../../ssdlite_mobilenet_v2_coco_2018_05_09/onnx/ssdlite_mobilenet_v2_300x300_gs.onnx
 ```
 
-If you check the converted ssdlite_mobilenet_v2_320x320_gs.onnx in [Netron](https://netron.app/), you can see that `NonMaxSuppression` has been replaced by `TFLiteNMS_TRT`.
+If you check the converted ssdlite_mobilenet_v2_300x300_gs.onnx in [Netron](https://netron.app/), you can see that `NonMaxSuppression` has been replaced by `TFLiteNMS_TRT`.
 
 ![image](images/add_TFLiteNMS_TRT.png)
 <br>
@@ -179,9 +179,17 @@ sudo rm /usr/lib/aarch64-linux-gnu/libnvinfer_plugin.so.7
 sudo ln -s /usr/lib/aarch64-linux-gnu/libnvinfer_plugin.so.7.2.3 /usr/lib/aarch64-linux-gnu/libnvinfer_plugin.so.7
 ```
 
-Copy `ssdlite_mobilenet_v2_320x320_gs.onnx` to jetson and check model.
+Copy `ssdlite_mobilenet_v2_300x300_gs.onnx` to jetson and check model.
 ```
-/usr/src/tensorrt/bin/trtexec --onnx=/home/jetson/tensorrt-examples/models/ssdlite_mobiledet_gpu_320x320_gs.onnx
+/usr/src/tensorrt/bin/trtexec --onnx=/home/jetson/tensorrt-examples/models/ssdlite_mobiledet_gpu_300x300_gs.onnx
+```
+
+Install pycuda.  
+See details:
+- [pycuda installation failure on jetson nano - NVIDIA FORUMS](https://forums.developer.nvidia.com/t/pycuda-installation-failure-on-jetson-nano/77152/22)
+```
+sudo apt install python3-dev
+pip3 install --global-option=build_ext --global-option="-I/usr/local/cuda/include" --global-option="-L/usr/local/cuda/lib64" pycuda
 ```
 
 Convert to Serialize engine file.  
@@ -189,14 +197,16 @@ If you want to convert to FP16 model, add --fp16 to the argument of `convert_onn
 ```
 cd ~/tensorrt-examples/python/detection/
 python3 convert_onnxgs2trt.py \
-    --model /home/jetson/tensorrt-examples/models/ssdlite_mobiledet_gpu_320x320_gs.onnx \
-    --output /home/jetson/tensorrt-examples/models/ssdlite_mobiledet_gpu_320x320_fp1 \
+    --model /home/jetson/tensorrt-examples/models/ssdlite_mobilenet_v2_300x300_gs.onnx \
+    --output /home/jetson/tensorrt-examples/models/ssdlite_mobilenet_v2_300x300_fp16.trt \
     --fp16
 ```
 
-Finally you can run the demo.
+Finally you can run the demo (width and height options are model input).
 ```
 python3 trt_detection.py \
-    --model ../../models/ssdlite_mobiledet_gpu_320x320_fp16.trt 
-    --label ../../models/coco_labels.txt 
+    --model ../../models/ssdlite_mobilenet_v2_300x300_fp16.trt \
+    --label ../../models/coco_labels.txt \
+    --width 300 \
+    --height 300
 ```
