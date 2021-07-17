@@ -22,7 +22,7 @@ import common
 TRT_LOGGER = trt.Logger(trt.Logger.INFO)
 trt.init_libnvinfer_plugins(TRT_LOGGER, "")
 
-WINDOW_NAME = "Tensorrt PoseNet example."
+WINDOW_NAME = "TensorRT PoseNet example."
 
 NUM_KEYPOINTS = 17
 

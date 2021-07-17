@@ -25,7 +25,7 @@ import common
 TRT_LOGGER = trt.Logger(trt.Logger.INFO)
 trt.init_libnvinfer_plugins(TRT_LOGGER, "")
 
-WINDOW_NAME = "Tensorrt detection example."
+WINDOW_NAME = "TensorRT detection example."
 
 
 def get_engine(engine_file_path):

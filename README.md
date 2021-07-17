@@ -5,10 +5,10 @@ TensorRT examples (Jetson, Python/C++)
 
 ## List of samples
 
-|Object detection|
-|:--|
-|[TensorFlow Lite to TensorRT](python/detection/README.md)|
-|![detection](images/detection.gif)|
+|Object detection|Pose estimation|
+|:--|:--|
+|[TensorFlow Lite to TensorRT SSDLite](python/detection/README.md)|[TensorFLow Lite to TensorRT PoseNet](python/posenet/README.md)
+|![detection](images/detection.gif)|![posenet](images/posenet.gif)|
 
 ## LICENSE
 The following files are licensed under [NVIDIA/TensorRT](https://github.com/NVIDIA/TensorRT).
