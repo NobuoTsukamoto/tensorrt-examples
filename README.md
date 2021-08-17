@@ -10,6 +10,11 @@ TensorRT examples (Jetson, Python/C++)
 |[TensorFlow Lite to TensorRT SSDLite](python/detection/README.md)|[TensorFLow Lite to TensorRT PoseNet](python/posenet/README.md)
 |![detection](images/detection.gif)|![posenet](images/posenet.gif)|
 
+|MIRNet|
+|:--|
+|[TensorFlow Lite to TensorRT MIRNet](python/mirnet/README.md)|
+|![mirnet](images/mirnet.gif)|
+
 ## LICENSE
 The following files are licensed under [NVIDIA/TensorRT](https://github.com/NVIDIA/TensorRT).
 - [common.py](python/detection/common.py)
