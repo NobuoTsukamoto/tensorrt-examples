@@ -12,8 +12,13 @@ TensorRT examples (Jetson, Python/C++)
 
 |MIRNet|
 |:--|
-|[TensorFlow Lite to TensorRT MIRNet](python/mirnet/README.md)|
-|![mirnet](images/mirnet.gif)|
+|[TensorFlow Lite to TensorRT MIRNet](python/mirnet/README.md)|[ONNX to TensorRT ESRGAN](python/esrgan/README.md)|
+|![mirnet](images/mirnet.gif)|![esrgan](images/esrgan.png)|
+
+|ESRGAN|
+|:--|
+|[ONNX to TensorRT ESRGAN](python/esrgan/README.md)|
+|![esrgan](images/esrgan.png)|
 
 ## LICENSE
 The following files are licensed under [NVIDIA/TensorRT](https://github.com/NVIDIA/TensorRT).
