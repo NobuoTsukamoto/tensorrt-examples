@@ -29,7 +29,7 @@ apt update
 apt install python3-opencv
 ```
 
-## Download ONNC model
+## Download ONNX model
 Clone PINTO_model_zoo repository and download MIRNet model.
 ```
 git clone https://github.com/PINTO0309/PINTO_model_zoo.git

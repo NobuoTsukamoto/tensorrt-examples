@@ -44,6 +44,7 @@ See details:
 - [pycuda installation failure on jetson nano - NVIDIA FORUMS](https://forums.developer.nvidia.com/t/pycuda-installation-failure-on-jetson-nano/77152/22)
 ```
 sudo apt install python3-dev
+pip3 install --user cython
 pip3 install --global-option=build_ext --global-option="-I/usr/local/cuda/include" --global-option="-L/usr/local/cuda/lib64" pycuda
 ```
 
@@ -52,6 +53,8 @@ Clone repository.
 ```
 cd ~
 git clone https://github.com/NobuoTsukamoto/tensorrt-examples
+cd tensorrt-examples
+git submodule update --init --recursive
 ```
 
 ### Convert to Serialize engine file.

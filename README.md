@@ -10,15 +10,15 @@ TensorRT examples (Jetson, Python/C++)
 |[TensorFlow Lite to TensorRT SSDLite](python/detection/README.md)|[TensorFLow Lite to TensorRT PoseNet](python/posenet/README.md)
 |![detection](images/detection.gif)|![posenet](images/posenet.gif)|
 
-|MIRNet|
-|:--|
-|[TensorFlow Lite to TensorRT MIRNet](python/mirnet/README.md)|[ONNX to TensorRT ESRGAN](python/esrgan/README.md)|
-|![mirnet](images/mirnet.gif)|![esrgan](images/esrgan.png)|
+|MIRNet|ESRGAN|
+|:--|:--|
+|[TensorFlow Lite to TensorRT MIRNet](python/mirnet/README.md)|[ONNX to TensorRT ESRGAN](python/esrgan/README.md)|[ONNX to TensorRT ESRGAN](python/esrgan/README.md)|
+|![mirnet](images/mirnet.gif)|![esrgan](images/esrgan.png)|![esrgan](images/esrgan.png)|
 
-|ESRGAN|
+|U^2-Net|
 |:--|
-|[ONNX to TensorRT ESRGAN](python/esrgan/README.md)|
-|![esrgan](images/esrgan.png)|
+|[ONNX to TensorRT U^2-Net](python/u2net/README.md)|
+|![u^2-net](images/images/u2net.m4v)|
 
 ## LICENSE
 The following files are licensed under [NVIDIA/TensorRT](https://github.com/NVIDIA/TensorRT).
