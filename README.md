@@ -18,7 +18,7 @@ TensorRT examples (Jetson, Python/C++)
 |U^2-Net|
 |:--|
 |[ONNX to TensorRT U^2-Net](python/u2net/README.md)|
-|![u^2-net](images/images/u2net.m4v)|
+|![u^2-net](images/u2net.m4v)|
 
 ## LICENSE
 The following files are licensed under [NVIDIA/TensorRT](https://github.com/NVIDIA/TensorRT).
