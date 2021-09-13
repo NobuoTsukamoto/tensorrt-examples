@@ -1,4 +1,4 @@
-# TensorRT Yu-Net
+# TensorRT Face landmark
 
 ## Description
 This sample contains code that performs TensorRT inference on Jetson.

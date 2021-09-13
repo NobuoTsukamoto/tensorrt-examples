@@ -20,6 +20,11 @@ TensorRT examples (Jetson, Python/C++)
 |[ONNX to TensorRT U^2-Net](python/u2net/README.md)|
 |![u^2-net](images/u2net.gif)|
 
+|Face landmark|Yu-Net|
+|:--|:--|
+|[ONNX to TensorRT Face landmark](python/face_landmark/README.md)|[ONNX to TensorRT Yu-Net](python/yunet/README.md)|
+|![face-landmark](images/keypoint.gif)|![Yu-Net](images/yunet.gif)|
+
 ## LICENSE
 The following files are licensed under [NVIDIA/TensorRT](https://github.com/NVIDIA/TensorRT).
 - [common.py](python/detection/common.py)
