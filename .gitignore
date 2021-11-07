@@ -4,3 +4,6 @@
 *.trt
 *.json
 __pycache__
+
+cpp/efficientdet/build
+*.pyc
