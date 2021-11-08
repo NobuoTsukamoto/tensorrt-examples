@@ -7,7 +7,7 @@ TensorRT examples (Jetson, Python/C++)
 
 |Object detection|Pose estimation|
 |:--|:--|
-|[TensorFlow Lite to TensorRT SSDLite](python/detection/README.md)|[TensorFLow Lite to TensorRT PoseNet](python/posenet/README.md)
+|[TensorFlow Lite to TensorRT SSDLite](python/detection/README.md)<br>[EfficientDet-Lite C++ CMake Examples in TensorRT](cpp/efficientdet/README.md)|[TensorFLow Lite to TensorRT PoseNet](python/posenet/README.md)
 |![detection](images/detection.gif)|![posenet](images/posenet.gif)|
 
 |MIRNet|ESRGAN|
