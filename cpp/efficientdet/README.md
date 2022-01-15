@@ -23,7 +23,7 @@ $ sudo apt install libopencv-dev cmake libboost-dev
 #### Clone repository and init submodule.
 ```
 $ cd ~
-$ git clone https://github.com/NobuoTsukamoto/edge_tpu.git
+$ git clone https://github.com/NobuoTsukamoto/tensorrt-examples.git
 $ cd edge_tpu
 $ git submodule init && git submodule update
 ```
