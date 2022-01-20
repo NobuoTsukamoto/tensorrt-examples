@@ -25,6 +25,16 @@ TensorRT examples (Jetson, Python/C++)
 |[ONNX to TensorRT Face landmark](python/face_landmark/README.md)|[ONNX to TensorRT Yu-Net](python/yunet/README.md)|
 |![face-landmark](images/keypoint.gif)|![Yu-Net](images/yunet.gif)|
 
+| DeepLab v3+ EdgeTPUV2 and AutoSeg EdgeTPU|
+|:--|
+|[Convert ONNX Model and otimize the model  using openvino2tensorflow and tflite2tensorflow.](python/deeplabv3_edgetpuv2/README.md)|
+|YouTube Video Link<br>[![](https://img.youtube.com/vi/EDffgHSg11A/0.jpg)](https://youtu.be/EDffgHSg11A)|
+
+|Ultra-Fast-Lane-Detection|Fast-SCNN|
+|:--|:--|
+|[ONNX to TensorRT Ultra-Fast-Lane-Detection](python/ultra_fast_lane_detection/README.md)|[ONNX to TensorRT Fast-SCNN](python/fast_scnn/README.md)|
+|YouTube Video Link<br>|YouTube Video Link<br>|
+
 ## LICENSE
 The following files are licensed under [NVIDIA/TensorRT](https://github.com/NVIDIA/TensorRT).
 - [common.py](python/detection/common.py)
