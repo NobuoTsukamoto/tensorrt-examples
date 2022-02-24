@@ -122,6 +122,7 @@ def main():
     input_shape = tuple(map(int, args.input_shape.split(",")))
     engine = get_engine(args.model)
     context = engine.create_execution_context()
+    inputs, outputs, bindings, stream = common.allocate_buffers(engine)
 
     # Output Video file
     # Define the codec and create VideoWriter object
@@ -144,14 +145,13 @@ def main():
 
         # inference.
         start = time.perf_counter()
-        inputs, outputs, bindings, stream = common.allocate_buffers(engine)
         inputs[0].host = np.ascontiguousarray(normalized_im)
-        outputs = common.do_inference_v2(
+        trt_outputs = common.do_inference_v2(
             context, bindings=bindings, inputs=inputs, outputs=outputs, stream=stream
         )
         inference_time = (time.perf_counter() - start) * 1000
 
-        seg_map = np.array(outputs[0])
+        seg_map = np.array(trt_outputs[0])
         seg_map = seg_map.reshape([-1, input_shape[0], input_shape[1]])
         seg_map = seg_map.transpose(1, 2, 0)
         seg_map = np.argmax(seg_map, axis=2)

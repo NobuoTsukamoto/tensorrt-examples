@@ -1,1 +1,1 @@
-../../../TensorRT/samples/python/common.py
+../../TensorRT/samples/python/common.py
