@@ -35,10 +35,11 @@ def get_engine(engine_file_path):
         return runtime.deserialize_cuda_engine(f.read())
 
 
-def normalize(im):
+def normalize(im, is_nchw):
     im = np.asarray(im, dtype="float32")
     im = (im / 255.0 - mean) / std
-    im = im.transpose(2, 0, 1)
+    if is_nchw:
+        im = im.transpose(2, 0, 1)
     im = np.expand_dims(im, axis=0)
     return im.astype("float32")
 
@@ -91,6 +92,12 @@ def main():
         "--videopath", help="File path of input video file.", default=None, type=str
     )
     parser.add_argument("--output", help="File path of output image.", type=str)
+    parser.add_argument(
+        "--with_argmax", help="Model has argmax.", action="store_true"
+    )
+    parser.add_argument(
+        "--nhwc", help="Model input is NHWC.", action="store_true"
+    )
     args = parser.parse_args()
 
     # Initialize window.
@@ -141,20 +148,25 @@ def main():
 
         im = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         resized_im = cv2.resize(im, (input_shape[1], input_shape[0]))
-        normalized_im = normalize(resized_im)
+        normalized_im = normalize(resized_im, not bool(args.nhwc))
 
         # inference.
         start = time.perf_counter()
+
         inputs[0].host = np.ascontiguousarray(normalized_im)
         trt_outputs = common.do_inference_v2(
             context, bindings=bindings, inputs=inputs, outputs=outputs, stream=stream
         )
+        seg_map = np.array(trt_outputs[0])
+
+        if args.with_argmax:
+            seg_map = seg_map.reshape([input_shape[0], input_shape[1]])
+        else:
+            seg_map = seg_map.reshape([-1, input_shape[0], input_shape[1]])
+            seg_map = np.argmax(seg_map, axis=0)
+
         inference_time = (time.perf_counter() - start) * 1000
 
-        seg_map = np.array(trt_outputs[0])
-        seg_map = seg_map.reshape([-1, input_shape[0], input_shape[1]])
-        seg_map = seg_map.transpose(1, 2, 0)
-        seg_map = np.argmax(seg_map, axis=2)
         seg_map += 1  # Set the label from 1 for drawing.
         seg_image = label_to_color_image(colormap, seg_map)
         seg_image = cv2.resize(seg_image, (w, h))

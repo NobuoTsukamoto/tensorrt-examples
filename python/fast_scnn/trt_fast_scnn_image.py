@@ -11,6 +11,7 @@
 
 import argparse
 import os
+import time
 
 import cv2
 import numpy as np
@@ -34,10 +35,11 @@ def get_engine(engine_file_path):
         return runtime.deserialize_cuda_engine(f.read())
 
 
-def normalize(im):
+def normalize(im, is_nchw):
     im = np.asarray(im, dtype="float32")
     im = (im / 255.0 - mean) / std
-    im = im.transpose(2, 0, 1)
+    if is_nchw:
+        im = im.transpose(2, 0, 1)
     im = np.expand_dims(im, axis=0)
     return im.astype("float32")
 
@@ -92,13 +94,21 @@ def main():
     parser.add_argument(
         "--output", help="File path of output image.", required=True, type=str
     )
+    parser.add_argument(
+        "--count", help="Nun of inference.", type=int, default=10
+    )
+    parser.add_argument(
+        "--with_argmax", help="Model has argmax.", action="store_true"
+    )
+    parser.add_argument(
+        "--nhwc", help="Model input is NHWC.", action="store_true"
+    )
     args = parser.parse_args()
 
     # Initialize colormap
     colormap = create_label_colormap()
 
     # Load model.
-    model_name = os.path.splitext(os.path.basename(args.model))[0]
     input_shape = tuple(map(int, args.input_shape.split(",")))
     engine = get_engine(args.model)
     context = engine.create_execution_context()
@@ -107,19 +117,35 @@ def main():
     h, w, _ = frame.shape
     im = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     resized_im = cv2.resize(im, (input_shape[1], input_shape[0]))
-    normalized_im = normalize(resized_im)
+    normalized_im = normalize(resized_im, not bool(args.nhwc))
 
-    # inference.
-    inputs, outputs, bindings, stream = common.allocate_buffers(engine)
-    inputs[0].host = np.ascontiguousarray(normalized_im)
-    outputs = common.do_inference_v2(
-        context, bindings=bindings, inputs=inputs, outputs=outputs, stream=stream
-    )
+    elapsed_list = []
 
-    seg_map = np.array(outputs[0])
-    seg_map = seg_map.reshape([-1, input_shape[0], input_shape[1]])
-    seg_map = seg_map.transpose(1, 2, 0)
-    seg_map = np.argmax(seg_map, axis=2)
+    for i in range(args.count):
+        # inference.
+        start = time.perf_counter()
+        inputs, outputs, bindings, stream = common.allocate_buffers(engine)
+        inputs[0].host = np.ascontiguousarray(normalized_im)
+        outputs = common.do_inference_v2(
+            context, bindings=bindings, inputs=inputs, outputs=outputs, stream=stream
+        )
+
+        seg_map = np.array(outputs[0])
+
+        if args.with_argmax:
+            seg_map = seg_map.reshape([input_shape[0], input_shape[1]])
+        else:
+            seg_map = seg_map.reshape([-1, input_shape[0], input_shape[1]])
+            seg_map = np.argmax(seg_map, axis=0)
+        inference_time = (time.perf_counter() - start) * 1000
+        print("Inference: {0:.2f}ms".format(inference_time))
+
+        if (i != 0):
+            elapsed_list.append(inference_time)
+
+    if elapsed_list:
+        print("Mean inference: {0:2f}ms".format(np.mean(elapsed_list)))
+
     seg_map += 1
     seg_image = label_to_color_image(colormap, seg_map)
     seg_image = cv2.resize(seg_image, (w, h))
