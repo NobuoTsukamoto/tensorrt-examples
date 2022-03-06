@@ -77,7 +77,7 @@ def append_fused_argmax(graph):
         "nearest_mode": resize_node.attrs["nearest_mode"],
     }
     resize_output = gs.Variable(
-        name="fused_resize_output",
+        name="resize_output",
         dtype=np.float32,
         shape=(batch, num_class, h // 2, w // 2),
     )

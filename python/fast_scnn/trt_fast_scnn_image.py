@@ -35,11 +35,10 @@ def get_engine(engine_file_path):
         return runtime.deserialize_cuda_engine(f.read())
 
 
-def normalize(im, is_nchw):
+def normalize(im):
     im = np.asarray(im, dtype="float32")
     im = (im / 255.0 - mean) / std
-    if is_nchw:
-        im = im.transpose(2, 0, 1)
+    im = im.transpose(2, 0, 1)
     im = np.expand_dims(im, axis=0)
     return im.astype("float32")
 
@@ -92,16 +91,13 @@ def main():
         "--input", help="File path of input image file.", required=True, type=str
     )
     parser.add_argument(
-        "--output", help="File path of output image.", required=True, type=str
+        "--output", help="File path of output image.", default=None, type=str
     )
     parser.add_argument(
-        "--count", help="Nun of inference.", type=int, default=10
+        "--count", help="Nun of inference.", type=int, default=101
     )
     parser.add_argument(
         "--with_argmax", help="Model has argmax.", action="store_true"
-    )
-    parser.add_argument(
-        "--nhwc", help="Model input is NHWC.", action="store_true"
     )
     args = parser.parse_args()
 
@@ -109,6 +105,7 @@ def main():
     colormap = create_label_colormap()
 
     # Load model.
+    model_name = os.path.splitext(os.path.basename(args.model))[0]
     input_shape = tuple(map(int, args.input_shape.split(",")))
     engine = get_engine(args.model)
     context = engine.create_execution_context()
@@ -117,11 +114,11 @@ def main():
     h, w, _ = frame.shape
     im = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     resized_im = cv2.resize(im, (input_shape[1], input_shape[0]))
-    normalized_im = normalize(resized_im, not bool(args.nhwc))
+    normalized_im = normalize(resized_im)
 
     elapsed_list = []
 
-    for i in range(args.count):
+    for count in range(args.count):
         # inference.
         start = time.perf_counter()
         inputs, outputs, bindings, stream = common.allocate_buffers(engine)
@@ -138,22 +135,27 @@ def main():
             seg_map = seg_map.reshape([-1, input_shape[0], input_shape[1]])
             seg_map = np.argmax(seg_map, axis=0)
         inference_time = (time.perf_counter() - start) * 1000
-        print("Inference: {0:.2f}ms".format(inference_time))
 
-        if (i != 0):
+        if count % 20 == 0:
+            print("count: {0:04} Inference: {1:.2f} ms".format(count, inference_time))
+
+        if (count != 0):
             elapsed_list.append(inference_time)
 
     if elapsed_list:
-        print("Mean inference: {0:2f}ms".format(np.mean(elapsed_list)))
+        print("Mean inference: {0:.2f} ms".format(np.mean(elapsed_list)))
 
-    seg_map += 1
-    seg_image = label_to_color_image(colormap, seg_map)
-    seg_image = cv2.resize(seg_image, (w, h))
-    im = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) // 2 + seg_image // 2
-    im = cv2.cvtColor(im, cv2.COLOR_RGB2BGR)
+    if args.output:
+        # Post process.
+        seg_map += 1
+        seg_image = label_to_color_image(colormap, seg_map)
+        seg_image = cv2.resize(seg_image, (w, h))
+        im = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) // 2 + seg_image // 2
+        im = cv2.cvtColor(im, cv2.COLOR_RGB2BGR)
+        draw_caption(im, (10, 30), model_name)
 
-    # Output image file.
-    cv2.imwrite(args.output, im)
+        # Output image file.
+        cv2.imwrite(args.output, im)
 
 
 if __name__ == "__main__":
