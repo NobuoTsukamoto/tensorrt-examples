@@ -127,6 +127,7 @@ def main():
     # Load model.
     engine = get_engine(args.model)
     context = engine.create_execution_context()
+    inputs, outputs, bindings, stream = common.allocate_buffers(engine)
 
     # Output Video file
     # Define the codec and create VideoWriter object
@@ -150,22 +151,20 @@ def main():
 
         # inference.
         start = time.perf_counter()
-        inputs, outputs, bindings, stream = common.allocate_buffers(engine)
         inputs[0].host = normalized_im
-        outputs = common.do_inference_v2(
+        trt_outputs = common.do_inference_v2(
             context, bindings=bindings, inputs=inputs, outputs=outputs, stream=stream
         )
-
         inference_time = (time.perf_counter() - start) * 1000
 
-        boxs = outputs[1].reshape([int(outputs[0]), 4])
+        boxs = trt_outputs[1].reshape([int(trt_outputs[0]), 4])
         for index, box in enumerate(boxs):
-            if outputs[2][index] < args.scoreThreshold:
+            if trt_outputs[2][index] < args.scoreThreshold:
                 continue
 
             # Draw bounding box.
-            class_id = int(outputs[3][index])
-            score = outputs[2][index]
+            class_id = int(trt_outputs[3][index])
+            score = trt_outputs[2][index]
             caption = "{0}({1:.2f})".format(labels[class_id - 1], score)
 
             xmin = int(box[0] * w)
