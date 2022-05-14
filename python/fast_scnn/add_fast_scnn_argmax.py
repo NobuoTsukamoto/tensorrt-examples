@@ -13,14 +13,9 @@
 import argparse
 
 import numpy as np
-
 import onnx
 import onnx.numpy_helper
-from onnx import shape_inference
-
 import onnx_graphsurgeon as gs
-from onnx_graphsurgeon.ir.tensor import Constant
-from onnx_graphsurgeon.exporters.onnx_exporter import OnnxExporter
 
 
 def append_argmax(graph):
@@ -29,14 +24,10 @@ def append_argmax(graph):
     batch, _, h, w = graph.outputs[0].shape
     argmax_inputs = [node for node in graph.nodes if node.op == "Resize"][-1].outputs
 
-    axis = 1
-    keepdims = 0
-    select_last_index = False
-
     argmax_attrs = {
-        "axis": axis,
-        "keepdims": keepdims,
-        "select_last_index": select_last_index,
+        "axis": 1,
+        "keepdims": 1,
+        "select_last_index": False,
     }
 
     output = gs.Variable(name="output", dtype=np.int64, shape=(batch, h, w))
@@ -54,6 +45,7 @@ def append_argmax(graph):
 
 
 def append_fused_argmax(graph):
+    print("Add Fused ArgMax.")
 
     batch, num_class, h, w = graph.outputs[0].shape
 
@@ -88,17 +80,15 @@ def append_fused_argmax(graph):
         outputs=[resize_output],
     )
     graph.nodes.append(resize_node)
-    # graph.outputs = [resize1_output]
-    # return graph
 
     # Add Argmax
     argmax_attrs = {
         "axis": 1,
-        "keepdims": 0,
+        "keepdims": 1,
         "select_last_index": False,
     }
     argmax_output = gs.Variable(
-        name="argmax_output", dtype=np.int64, shape=(batch, h // 2, w // 2)
+        name="argmax_output", dtype=np.int64, shape=(batch, 1, h // 2, w // 2)
     )
     argmax_node = gs.Node(
         op="ArgMax",
@@ -113,7 +103,7 @@ def append_fused_argmax(graph):
         "to": int(onnx.TensorProto.FLOAT),
     }
     cast_output = gs.Variable(
-        name="cast_output", dtype=np.float32, shape=(batch, h // 2, w // 2)
+        name="cast_output", dtype=np.float32, shape=(batch, 1, h // 2, w // 2)
     )
     cast_node = gs.Node(
         op="Cast",
@@ -131,7 +121,7 @@ def append_fused_argmax(graph):
         "resize_nearest_scale", values=np.array([], dtype=np.float32)
     )
     nearest_size_input = gs.Constant(
-        "resize_nearest_size", values=np.array([batch, h, w], dtype=np.int64)
+        "resize_nearest_size", values=np.array([batch, 1, h, w], dtype=np.int64)
     )
     resize_nearest_attrs = {
         "coordinate_transformation_mode": resize_node.attrs[
@@ -139,7 +129,6 @@ def append_fused_argmax(graph):
         ],
         "cubic_coeff_a": resize_node.attrs["cubic_coeff_a"],
         "exclude_outside": 0,
-        # "extrapolation_value": resize_node.attrs["extrapolation_value"],
         "mode": "nearest",
         "nearest_mode": "round_prefer_ceil",
     }
@@ -163,13 +152,14 @@ def append_fused_argmax(graph):
 
     # Cast Float32 to INT32
     output_cast_attrs = {
-        "to": int(onnx.TensorProto.INT32),
+        "to": int(onnx.TensorProto.INT64),
     }
     output = gs.Variable(
         name="output",
-        dtype=np.int32,
-        shape=(batch, h, w),
+        dtype=np.int64,
+        shape=(batch, 1, h, w),
     )
+    graph.outputs = [output]
     output_cast_node = gs.Node(
         op="Cast",
         attrs=output_cast_attrs,
@@ -177,8 +167,6 @@ def append_fused_argmax(graph):
         outputs=[output],
     )
     graph.nodes.append(output_cast_node)
-
-    graph.outputs = [output]
 
     return graph
 
