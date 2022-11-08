@@ -31,7 +31,7 @@ Check `trtexec`
 Copy `fast_scnn_NNNxNNN.onnx` to `tensorrt-examples/models`.  
 In the following, `fast_scnn_576x768.onnx` is taken as an example.
 ```
-cp ~//home/nobuo/Data/models/PINTO_model_zoo/228_Fast-SCNN/fast_scnn_576x768/fast_scnn_576x768.onnx ~/tensorrt-examples/models/
+cp ~/home/nobuo/Data/models/PINTO_model_zoo/228_Fast-SCNN/fast_scnn_576x768/fast_scnn_576x768.onnx ~/tensorrt-examples/models/
 ```
 
 Convert to Serialize engine file.
@@ -45,13 +45,13 @@ python3 convert_onnxgs2trt.py \
 
 Finally you can run the demo.
 ```
-python3 trt_ultra_fast_lane_detection_capture.py \
+python3 trt_fast_scnn_capture.py \
     --model ../../models/fast_scnn_576x768.trt
     --input_shape 576,768
 
 or 
 
-python3 trt_ultra_fast_lane_detection_image.py \
+python3 trt_fast_scnn_image.py \
     --model ../../models/fast_scnn_576x768.trt
     --input_shape 576,768
     --input input_image.png
