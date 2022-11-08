@@ -35,6 +35,11 @@ TensorRT examples (Jetson, Python/C++)
 |[ONNX to TensorRT Ultra-Fast-Lane-Detection](python/ultra_fast_lane_detection/README.md)|[ONNX to TensorRT Fast-SCNN](python/fast_scnn/README.md)|
 |YouTube Video Link<br>[![](https://img.youtube.com/vi/gsqi37XZF9M/0.jpg)](https://youtu.be/gsqi37XZF9M)|YouTube Video Link<br>[![](https://img.youtube.com/vi/Lg6BvEgN9AA/0.jpg)](https://youtu.be/Lg6BvEgN9AA)|
 
+|MOSAIC|
+|:--|
+|[TensorRT MOSAIC](python/mosaic/README.md)|
+
+
 ## LICENSE
 The following files are licensed under [NVIDIA/TensorRT](https://github.com/NVIDIA/TensorRT).
 - [common.py](python/detection/common.py)
