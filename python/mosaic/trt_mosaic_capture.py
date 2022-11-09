@@ -104,10 +104,10 @@ def main():
     args = parser.parse_args()
 
     # Initialize window.
-    #cv2.namedWindow(
-    #    WINDOW_NAME, cv2.WINDOW_GUI_NORMAL | cv2.WINDOW_AUTOSIZE | cv2.WINDOW_KEEPRATIO
-    #)
-    #cv2.moveWindow(WINDOW_NAME, 100, 50)
+    cv2.namedWindow(
+        WINDOW_NAME, cv2.WINDOW_GUI_NORMAL | cv2.WINDOW_AUTOSIZE | cv2.WINDOW_KEEPRATIO
+    )
+    cv2.moveWindow(WINDOW_NAME, 100, 50)
 
     # Video capture.
     if args.videopath == "":
@@ -139,8 +139,6 @@ def main():
         video_writer = cv2.VideoWriter(args.output, fourcc, fps, (w, h))
 
     elapsed_list = []
-
-    counter=0
 
     while cap.isOpened():
         ret, frame = cap.read()
@@ -187,13 +185,10 @@ def main():
             video_writer.write(im)
 
         # Display
-        #cv2.imshow(WINDOW_NAME, im)
+        cv2.imshow(WINDOW_NAME, im)
         key = cv2.waitKey(10) & 0xFF
         if key == ord("q"):
             break
-        counter += 1
-        if counter % 30*60 == 0:
-            print(counter, display_text)
 
     # When everything done, release the window
     cap.release()
