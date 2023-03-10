@@ -24,7 +24,7 @@ $ sudo apt install libopencv-dev cmake libboost-dev
 ```
 $ cd ~
 $ git clone https://github.com/NobuoTsukamoto/tensorrt-examples.git
-$ cd edge_tpu
+$ cd tensorrt-examples
 $ git submodule init && git submodule update
 ```
 
