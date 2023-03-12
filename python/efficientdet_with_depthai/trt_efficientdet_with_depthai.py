@@ -185,7 +185,7 @@ def main():
         w, h = camRgb.getIspSize()
 
         color_frame = None
-        frameDisp = None
+        depth_data = None
 
         hostSpatials = HostSpatialsCalc(device)
         delta = 5
@@ -202,7 +202,6 @@ def main():
                 if len(packets) > 0:
                     latestPacket[queueName] = packets[-1]
 
-            depth_data = None
             if latestPacket["depth"] is not None:
                 depth_data = latestPacket["depth"]
 
