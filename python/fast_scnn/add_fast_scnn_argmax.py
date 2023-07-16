@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 """
-    Convert tensorflow lite object detection model to onnx model.
+    Script to add Argmax / Fused-Argmax to Fast SCNN
 
-    Copyright (c) 2021 Nobuo Tsukamoto
+    Copyright (c) 2023 Nobuo Tsukamoto
     This software is released under the MIT License.
     See the LICENSE file in the project root for more information.
 """
