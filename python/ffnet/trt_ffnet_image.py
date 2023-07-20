@@ -98,6 +98,12 @@ def main():
         help="Specify an input shape for inference.",
     )
     parser.add_argument(
+        "--output_shape",
+        type=str,
+        default="1024,2048",
+        help="Specify an input shape for inference.",
+    )
+    parser.add_argument(
         "--input", help="File path of input image file.", required=True, type=str
     )
     parser.add_argument(
@@ -108,6 +114,7 @@ def main():
     # Load model.
     model_name = os.path.splitext(os.path.basename(args.model))[0]
     input_shape = tuple(map(int, args.input_shape.split(",")))
+    output_shape = tuple(map(int, args.output_shape.split(",")))
     engine = get_engine(args.model)
     context = engine.create_execution_context()
 
@@ -125,7 +132,7 @@ def main():
     )
 
     seg_map = np.array(outputs[0])
-    seg_map = seg_map.reshape([input_shape[0], input_shape[1]])
+    seg_map = seg_map.reshape([output_shape[0], output_shape[1]])
 
     # Post process.
     seg_image = label_to_color_image(colormap, seg_map)
