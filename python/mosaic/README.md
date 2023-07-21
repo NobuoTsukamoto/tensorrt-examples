@@ -77,7 +77,7 @@ python3 trt_mosaic_capture.py \
 
 or 
 
-python3 trt_ultra_fast_lane_detection_image.py \
+python3 trt_mosaic_image.py \
     --model mosaic_mnv35_cityscapes_fused_argmax_fp16 \
     --input input_image.png \
     --output output_image.png
